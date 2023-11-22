@@ -3,7 +3,6 @@ package Network.Thread;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.function.Consumer;
 
 public class TcpConnectThread implements Runnable {
