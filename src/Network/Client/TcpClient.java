@@ -1,4 +1,4 @@
-package Network.TCP;
+package Network.Client;
 
 import Network.Enums.SocketStates;
 import Network.Exception.ClientSocketException;

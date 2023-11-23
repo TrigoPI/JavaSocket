@@ -1,4 +1,4 @@
-package Network.TCP;
+package Network.Server;
 
 import Network.Enums.NetworkEventType;
 import Network.Enums.NetworkProtocol;
@@ -12,22 +12,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.function.Consumer;
 
-public class TcpServer {
+public class TcpServer extends Server {
     private Consumer<NetworkStartEvent> m_onStartCb;
     private Consumer<NetworkConnectEvent> m_onConnectCb;
 
     private final ServerSocket m_socket;
-    private final int m_port;
 
     public TcpServer(int port) throws IOException {
+        super(port);
+
         m_socket = new ServerSocket(port);
-        m_port = port;
         m_onStartCb = null;
         m_onConnectCb = null;
-    }
-
-    public int GetListeningPort() {
-        return m_port;
     }
 
     public <T extends NetworkEvent>void AddEventListener(NetworkEventType type, Consumer<T> cb) {
@@ -40,17 +36,17 @@ public class TcpServer {
         OnStart();
     }
 
-    private void StartListenerThread() {
+    protected void StartListenerThread() {
         final TcpListenerThread listener = new TcpListenerThread(m_socket);
         final Thread thread = new Thread(listener);
 
-        listener.onConnect(this::OnThreadConnect);
-        listener.onError(this::OnThreadError);
+        listener.OnConnect(this::OnThreadConnect);
+        listener.OnError(this::OnThreadError);
 
         thread.start();
     }
 
-    public void OnStart() {
+    protected void OnStart() {
         if (m_onStartCb == null) return;
         final NetworkStartEvent event = new NetworkStartEvent(NetworkProtocol.TCP, m_port);
         m_onStartCb.accept(event);
@@ -62,7 +58,7 @@ public class TcpServer {
         m_onConnectCb.accept(event);
     }
 
-    private void OnThreadError(IOException e) {
+    protected void OnThreadError(IOException e) {
         System.out.println(e.toString());
     }
 }
